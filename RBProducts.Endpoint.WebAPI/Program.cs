@@ -63,6 +63,7 @@ namespace RBProducts.Endpoint.WebAPI
                 };
             });
 
+            var app = builder.Build();
 
         }
         public static void Middlewares(WebApplication app)
@@ -74,6 +75,8 @@ namespace RBProducts.Endpoint.WebAPI
             }
             app.UseAuthentication();
             app.UseAuthorization();
+
+
             app.MapControllers();
             app.UseFileServer();
         }

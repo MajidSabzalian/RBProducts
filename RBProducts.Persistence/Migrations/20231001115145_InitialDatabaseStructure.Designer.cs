@@ -12,8 +12,8 @@ using RBProducts.Persistence.Contexts;
 namespace RBProducts.Persistence.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20230930215336_AC-JoinProductWithUsers")]
-    partial class ACJoinProductWithUsers
+    [Migration("20231001115145_InitialDatabaseStructure")]
+    partial class InitialDatabaseStructure
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -89,6 +89,10 @@ namespace RBProducts.Persistence.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -140,6 +144,10 @@ namespace RBProducts.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -231,6 +239,10 @@ namespace RBProducts.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("AppUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("IsAvailable")
                         .HasColumnType("int");
 
@@ -255,18 +267,21 @@ namespace RBProducts.Persistence.Migrations
                     b.Property<DateTime>("ProduceDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("AppUserId");
 
                     b.HasIndex("ProduceDate", "ManufactureEmail")
                         .IsUnique();
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("RBProducts.Domain.Entities.ApplicationUser.AppUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.HasDiscriminator().HasValue("AppUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -322,13 +337,18 @@ namespace RBProducts.Persistence.Migrations
 
             modelBuilder.Entity("RBProducts.Domain.Entities.Products.Product", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("RBProducts.Domain.Entities.ApplicationUser.AppUser", "AppUser")
+                        .WithMany("Products")
+                        .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("RBProducts.Domain.Entities.ApplicationUser.AppUser", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

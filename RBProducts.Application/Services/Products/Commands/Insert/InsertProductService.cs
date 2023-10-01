@@ -25,7 +25,7 @@ namespace RBProducts.Application.Services.Products.Commands.Insert
                 ManufacturePhone = model.ManufacturePhone,
                 Name = model.Name,
                 ProduceDate = model.ProduceDate,
-                UserId = model.RequestUserID
+                AppUserId = model.RequestUserID
             };
             _context.Products.Add(_model);
             var _effected = _context.SaveChanges();

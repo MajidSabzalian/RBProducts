@@ -21,7 +21,7 @@ namespace RBProducts.Application.Services.Products.Commands.Delete
             var _model = _context.Products.Find(model.Id);
             if (_model != null)
             {
-                if (_model.UserId == model.RequestUserID)
+                if (_model.AppUserId == model.RequestUserID)
                 {
                     _model.IsRemovedRecord = true;
                     var _effected = _context.SaveChanges();

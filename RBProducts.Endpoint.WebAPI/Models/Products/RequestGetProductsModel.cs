@@ -2,7 +2,7 @@
 {
     public class RequestGetProductsModel
     {
-        public string? Userid { set; get; }
+        public string? Userid { set; get; } = "";
         public int Page { set; get; } = 1;
     }
 }

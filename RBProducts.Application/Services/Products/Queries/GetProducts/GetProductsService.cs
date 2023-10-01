@@ -18,9 +18,9 @@ namespace RBProducts.Application.Services.Products.Queries.GetProducts
         {
             //var ppp = _context.Products.ToList();
             var products = _context.Products.AsQueryable();
-            if (!string.IsNullOrWhiteSpace(model.SearchKey) && model.SearchKey.Length > 0)
+            if (!string.IsNullOrWhiteSpace(model.Userid) && model.Userid.Length > 0)
             {
-                products = products.Where(m => m.ManufactureEmail.Contains(model.SearchKey) || m.ManufacturePhone.Contains(model.SearchKey));
+                products = products.Where(m => m.AppUserId == model.Userid);
             }
             int rowscount = 0 , pagecount = 0;
             return new PaginationResultDto<GetProductsDto>()

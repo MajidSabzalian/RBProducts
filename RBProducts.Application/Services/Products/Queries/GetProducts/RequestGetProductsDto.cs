@@ -6,7 +6,7 @@ namespace RBProducts.Application.Services.Products.Queries.GetProducts
     
     public class RequestGetProductsDto : IPaginationRequest
     {
-        public string SearchKey { set; get; } = "";
+        public string Userid { set; get; } = "";
         public int Page { set; get; }
     }
 }

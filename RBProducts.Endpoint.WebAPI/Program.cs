@@ -30,12 +30,13 @@ namespace RBProducts.Endpoint.WebAPI
 
         public static void Services(IServiceCollection services , ConfigurationManager config)
         {
+            services.AddAutoMapper(typeof(Program));
             services.AddScoped<IDataBaseContext, DataBaseContext>();
             services.AddScoped<IGetProductsService, GetProductsService>();
             services.AddScoped<IInsertProductService, InsertProductService>();
             services.AddScoped<IDeleteProductService, DeleteProductService>();
             services.AddScoped<IUpdateProductService, UpdateProductService>();
-            services.AddScoped<ICheckLoginService, CheckLoginService>();
+            services.AddScoped<ILoginService, LoginService>();
 
             services.AddEntityFrameworkSqlServer()
                 .AddDbContext<DataBaseContext>(o => o
@@ -63,7 +64,6 @@ namespace RBProducts.Endpoint.WebAPI
                 };
             });
 
-            var app = builder.Build();
 
         }
         public static void Middlewares(WebApplication app)

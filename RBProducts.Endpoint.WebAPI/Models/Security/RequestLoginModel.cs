@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RBProducts.Endpoint.WebAPI.Models
+namespace RBProducts.Endpoint.WebAPI.Models.Security
 {
-    public class SecurityRequestModel
+    public class RequestLoginModel
     {
         [Required(ErrorMessage = "User Name is required")]
         public string? Username { get; set; }

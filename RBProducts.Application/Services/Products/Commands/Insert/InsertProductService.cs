@@ -24,7 +24,8 @@ namespace RBProducts.Application.Services.Products.Commands.Insert
                 ManufactureEmail = model.ManufactureEmail,
                 ManufacturePhone = model.ManufacturePhone,
                 Name = model.Name,
-                ProduceDate = model.ProduceDate
+                ProduceDate = model.ProduceDate,
+                UserId = model.RequestUserID
             };
             _context.Products.Add(_model);
             var _effected = _context.SaveChanges();

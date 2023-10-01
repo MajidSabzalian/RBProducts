@@ -1,25 +1,19 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using RBProducts.Application.Contexts;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace RBProducts.Endpoint.WebAPI.Services.Security.Login
 {
-    public class CheckLoginService : ICheckLoginService
+    public class LoginService : ILoginService
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IDataBaseContext _context;
-        public CheckLoginService(IDataBaseContext context, UserManager<IdentityUser> userManager,
+        public LoginService(IDataBaseContext context, UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _context = context;
@@ -27,18 +21,18 @@ namespace RBProducts.Endpoint.WebAPI.Services.Security.Login
             _roleManager = roleManager;
             _configuration = configuration;
         }
-        public async Task<ResultCheckLoginDto> ExecuteAsync(RequestCheckLoginDto model)
+        public async Task<ResultLoginDto> ExecuteAsync(RequestLoginDto model)
         {
-            var user = await _userManager.FindByNameAsync(model.UserName);
+            var user = await _userManager.FindByNameAsync(model.Username);
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
 
                 var authClaims = new List<Claim>
                 {
-                    new Claim(type : CheckLoginServiceClaimType.Username, user.UserName),
-                    new Claim(type : CheckLoginServiceClaimType.Userid, user.Id),
-                    new Claim(type : CheckLoginServiceClaimType.Email, user.Email),
+                    new Claim(type : LoginServiceClaimType.Username, user.UserName),
+                    new Claim(type : LoginServiceClaimType.Userid, user.Id),
+                    new Claim(type : LoginServiceClaimType.Email, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
@@ -49,13 +43,13 @@ namespace RBProducts.Endpoint.WebAPI.Services.Security.Login
 
                 var token = GetToken(authClaims);
 
-                return new ResultCheckLoginDto()
+                return new ResultLoginDto()
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
                     expiration = token.ValidTo
                 };
             }
-            return new ResultCheckLoginDto()
+            return new ResultLoginDto()
             {
                 token = "",
                 expiration = DateTime.Now

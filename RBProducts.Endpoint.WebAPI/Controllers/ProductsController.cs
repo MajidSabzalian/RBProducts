@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using RBProducts.Application.Services.Products.Commands.Delete;
 using RBProducts.Application.Services.Products.Commands.Insert;
 using RBProducts.Application.Services.Products.Commands.Update;
 using RBProducts.Application.Services.Products.Queries.GetProducts;
+using RBProducts.Endpoint.WebAPI.Models.Products;
 using RBProducts.Endpoint.WebAPI.Services.Security.Login;
 
 namespace RBProducts.Endpoint.WebAPI.Controllers
@@ -18,41 +20,47 @@ namespace RBProducts.Endpoint.WebAPI.Controllers
         private readonly IInsertProductService _insertProductService;
         private readonly IUpdateProductService _updateProductService;
         private readonly IDeleteProductService _deleteProductService;
+        private readonly IMapper _mapper;
         public ProductsController(IGetProductsService getProductsService , 
             IInsertProductService insertProductService,
             IUpdateProductService updateProductService,
-            IDeleteProductService deleteProductService)
+            IDeleteProductService deleteProductService , IMapper mapper)
         {
             _getProductsService = getProductsService;
             _insertProductService = insertProductService;
             _updateProductService = updateProductService;
             _deleteProductService = deleteProductService;
+            _mapper = mapper;
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<IActionResult> Products([FromQuery,FromForm,FromBody]RequestGetProductsDto model)
+        public async Task<IActionResult> Products([FromQuery, FromForm, FromBody] RequestGetProductsModel model)
         {
-            return Ok(_getProductsService.Execute(model));
+            return Ok(_getProductsService.Execute(_mapper.Map<RequestGetProductsDto>(model)));
         }
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Product(RequestInsertProductDto model)
+        public async Task<IActionResult> Product(RequestInsertModel model)
         {
-            return Ok(_insertProductService.Execute(model));
+            var uid = User.FindFirst(LoginServiceClaimType.Userid);
+            model.RequestUserID = uid.Value;
+            return Ok(_insertProductService.Execute(_mapper.Map<RequestInsertProductDto>(model)));
         }
         [Authorize]
         [HttpPut]
-        public async Task<IActionResult> Product(RequestUpdateProductDto model)
+        public async Task<IActionResult> Product(RequestUpdateModel model)
         {
-            var uid = User.FindFirst(CheckLoginServiceClaimType.Userid);
+            var uid = User.FindFirst(LoginServiceClaimType.Userid);
             model.RequestUserID = uid.Value;
-            return Ok(_updateProductService.Execute(model));
+            return Ok(_updateProductService.Execute(_mapper.Map<RequestUpdateProductDto>(model)));
         }
         [Authorize]
         [HttpDelete]
-        public async Task<IActionResult> Product(RequestDeleteProductDto model)
+        public async Task<IActionResult> Product(RequestDeleteModel model)
         {
-            return Ok(_deleteProductService.Execute(model));
+            var uid = User.FindFirst(LoginServiceClaimType.Userid);
+            model.RequestUserID = uid.Value;
+            return Ok(_deleteProductService.Execute(_mapper.Map<RequestDeleteProductDto>(model)));
         }
     }
 }

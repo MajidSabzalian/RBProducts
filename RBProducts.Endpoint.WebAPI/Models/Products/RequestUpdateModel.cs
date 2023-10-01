@@ -1,9 +1,8 @@
 ﻿using RBProducts.Domain.Entities.Products;
-using System.ComponentModel;
 
-namespace RBProducts.Application.Services.Products.Commands.Insert
+namespace RBProducts.Endpoint.WebAPI.Models.Products
 {
-    public class RequestInsertProductDto
+    public class RequestUpdateModel
     {
         public long Id { get; set; }
         public string Name { get; set; }
@@ -11,6 +10,7 @@ namespace RBProducts.Application.Services.Products.Commands.Insert
         public string ManufacturePhone { get; set; }
         public string ManufactureEmail { get; set; }
         public ProductIsAvailable IsAvailable { get; set; }
+
         public string RequestUserID { set; get; } = "";
     }
 }

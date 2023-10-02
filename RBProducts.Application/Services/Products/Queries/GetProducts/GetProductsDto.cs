@@ -10,5 +10,6 @@ namespace RBProducts.Application.Services.Products.Queries.GetProducts
         public string ManufacturePhone { get; set; } = "";
         public string ManufactureEmail { get; set; } = "";
         public ProductIsAvailable IsAvailable { get; set; }
+        public string UserID { get; set; } = "";
     }
 }

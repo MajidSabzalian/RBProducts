@@ -1,4 +1,5 @@
-﻿using RBProducts.Application.Common;
+﻿using AutoMapper;
+using RBProducts.Application.Common;
 using RBProducts.Application.Contexts;
 using RBProducts.Common;
 using RBProducts.Common.Models;
@@ -9,9 +10,12 @@ namespace RBProducts.Application.Services.Products.Queries.GetProducts
     public class GetProductsService : IGetProductsService
     {
         private readonly IDataBaseContext _context;
-        public GetProductsService(IDataBaseContext context)
+        private readonly IMapper _mapper;
+
+        public GetProductsService(IDataBaseContext context , IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public PaginationResultDto<GetProductsDto> Execute(RequestGetProductsDto model)
@@ -20,20 +24,14 @@ namespace RBProducts.Application.Services.Products.Queries.GetProducts
             var products = _context.Products.AsQueryable();
             if (!string.IsNullOrWhiteSpace(model.Userid) && model.Userid.Length > 0)
             {
-                products = products.Where(m => m.AppUserId == model.Userid);
+                products = products.Where(m => m.AppUserId == model.Userid.Trim());
             }
-            int rowscount = 0 , pagecount = 0;
+            int rowscount = 0;
             return new PaginationResultDto<GetProductsDto>()
             {
-                Items = products.ToPaged(model.Page, Consts.PageSize, out rowscount).Select(m => new GetProductsDto
-                {
-                    Id = m.Id,
-                    IsAvailable = m.IsAvailable,
-                    ManufactureEmail = m.ManufactureEmail,
-                    ManufacturePhone = m.ManufacturePhone,
-                    ProduceDate = m.ProduceDate,
-                    Name = m.Name
-                }).ToList(),
+                Items = products.ToPaged(model.Page, Consts.PageSize, out rowscount)
+                    .Select(m => _mapper.Map<GetProductsDto>(m))
+                    .ToList(),
                 PageCount = (int)Math.Ceiling(rowscount / (double)Consts.PageSize),
                 PageSize = Consts.PageSize,
                 Page = model.Page,

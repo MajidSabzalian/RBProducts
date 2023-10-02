@@ -9,6 +9,7 @@ using RBProducts.Endpoint.WebAPI.Services.Security.Login;
 using Microsoft.AspNetCore.Authorization;
 using RBProducts.Endpoint.WebAPI.Models.Security;
 using AutoMapper;
+using RBProducts.Endpoint.WebAPI.Utils;
 
 namespace RBProducts.Endpoint.WebAPI.Controllers
 {
@@ -25,9 +26,9 @@ namespace RBProducts.Endpoint.WebAPI.Controllers
             _mapper = mapper;
         }
         [HttpPost]
-        // [Route("login")]
         public async Task<IActionResult> Login([FromBody] RequestLoginModel model)
         {
+            if (!ModelState.IsValid) { return Ok(ModelState.GetErrorResult()); }
             return Ok(await _checkLoginService.ExecuteAsync(_mapper.Map<RequestLoginDto>(model)));
         }
     }

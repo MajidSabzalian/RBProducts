@@ -9,6 +9,7 @@ using RBProducts.Application.Services.Products.Commands.Update;
 using RBProducts.Application.Services.Products.Queries.GetProducts;
 using RBProducts.Endpoint.WebAPI.Models.Products;
 using RBProducts.Endpoint.WebAPI.Services.Security.Login;
+using RBProducts.Endpoint.WebAPI.Utils;
 
 namespace RBProducts.Endpoint.WebAPI.Controllers
 {
@@ -42,6 +43,7 @@ namespace RBProducts.Endpoint.WebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Product(RequestInsertModel model)
         {
+            if (!ModelState.IsValid) { return Ok(ModelState.GetErrorResult()); }
             var uid = User.FindFirst(LoginServiceClaimType.Userid);
             model.RequestUserID = uid.Value;
             return Ok(_insertProductService.Execute(_mapper.Map<RequestInsertProductDto>(model)));
@@ -50,6 +52,7 @@ namespace RBProducts.Endpoint.WebAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> Product(RequestUpdateModel model)
         {
+            if (!ModelState.IsValid) { return Ok(ModelState.GetErrorResult()); }
             var uid = User.FindFirst(LoginServiceClaimType.Userid);
             model.RequestUserID = uid.Value;
             return Ok(_updateProductService.Execute(_mapper.Map<RequestUpdateProductDto>(model)));
@@ -58,6 +61,7 @@ namespace RBProducts.Endpoint.WebAPI.Controllers
         [HttpDelete]
         public async Task<IActionResult> Product(RequestDeleteModel model)
         {
+            if (!ModelState.IsValid) { return Ok(ModelState.GetErrorResult()); }
             var uid = User.FindFirst(LoginServiceClaimType.Userid);
             model.RequestUserID = uid.Value;
             return Ok(_deleteProductService.Execute(_mapper.Map<RequestDeleteProductDto>(model)));
